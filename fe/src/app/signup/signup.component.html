@@ -1,0 +1,33 @@
+<div class="container py-5 h-100">
+  
+    <div class="row d-flex align-items-center justify-content-center h-100">
+        <div *ngIf="errMsg" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>{{errMsg}}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
+            <h2>Registration</h2>
+            <form [formGroup]="userForm" (ngSubmit)="userSubmit()"> 
+                <div class="form-outline mb-4">
+                    <input class="form-control form-control-lg" formControlName="name" />
+                    <label class="form-label" >Full Name</label>
+                </div>
+                <div class="form-outline mb-4">
+                    <input class="form-control form-control-lg" formControlName="email"/>
+                    <label class="form-label">Email address</label>
+                </div>    
+                <div class="form-outline mb-4">
+                    <input type="password" class="form-control form-control-lg" formControlName="password" />
+                    <label class="form-label" >Password</label>
+                </div>
+                <div class="form-outline mb-4">
+                    <input type="password" class="form-control form-control-lg" formControlName="netImg" />
+                    <label class="form-label" >Network image</label>
+                </div>
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Sign Up</button>
+            </form>
+        </div>
+    </div>
+</div>
+<router-outlet></router-outlet>

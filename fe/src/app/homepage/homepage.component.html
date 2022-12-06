@@ -1,0 +1,10 @@
+<div style="padding-top: 30px; ">
+    <div class="card" style="padding: 10px;align-items: center;">
+        <img src={{imgUrl}} alt="No Image Present for this user"  width="200" height="200">
+        <h1>{{name}}</h1>
+        <p>{{email}}</p>
+        <p><button (click)="logout()">logout</button></p>
+        <p><button style="color: white; background-color: green;" (click)="openDelete()">Edit Users</button></p>
+    </div>
+</div>
+<router-outlet></router-outlet>

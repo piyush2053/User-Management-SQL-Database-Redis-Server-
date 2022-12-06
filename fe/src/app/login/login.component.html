@@ -1,0 +1,30 @@
+<div class="container py-5 h-100">
+  <div class="row d-flex align-items-center justify-content-center h-100">
+    <div *ngIf="errorLogin" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <strong>{{errorLogin}}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="col-md-8 col-lg-7 col-xl-6">
+      <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.svg" class="img-fluid"
+        alt="Phone image">
+    </div>
+    <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
+      <h2 style="color: black;">Login</h2>
+      <b></b>
+      <form [formGroup]="loginForm">
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+          <input type="email" formControlName="email" class="form-control form-control-lg" />
+          <label class="form-label" style="color: black;">Email address</label>
+        </div>
+        <div class="form-outline mb-4">
+          <input type="password" formControlName="password" class="form-control form-control-lg" />
+          <label class="form-label" style="color: black;">Password</label>
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" (click)="login()">Sign in</button>
+        <a routerLink="/signup" style="margin-left: 10px;text-decoration: none; color: black;" clci>New User? Sign Up Here</a>
+      </form>
+    </div>
+  </div>
+</div>
+<router-outlet></router-outlet>
