@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiserviceService } from '../apiservice.service';
 
 @Component({
@@ -8,13 +9,17 @@ import { ApiserviceService } from '../apiservice.service';
 })
 export class DeleteComponent implements OnInit {
 
-  constructor(private api: ApiserviceService) { }
+  constructor(private api: ApiserviceService,private router:Router) { }
   readUser: any;
 
   ngOnInit(): void {
     this.api.getAllUser().subscribe((res) => {
       this.readUser = res.data;
+      
     })
+  }
+  navigateToSignup(){
+    this.router.navigateByUrl('/signup');
   }
 
   deleteUser(id:any){

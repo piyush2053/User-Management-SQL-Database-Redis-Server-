@@ -22,7 +22,7 @@ const db = mysql.createConnection({
     database: 'users',
     port: 3306
 })
-//checking connection............
+//checking connection with Database
 db.connect(err => {
     if (err) {
         console.log("404 - Error Connecting to Database")
@@ -31,17 +31,20 @@ db.connect(err => {
     }
 })
 
-//redis implementation 
-const redis_getUsers = (req,res,next)=>{
-    console.log("INside redis...................")
-    client.get('getUsers', (err,redis_data)=>{
+//redis implementation for Fetching User only 
+const redis_getUsers = (req, res, next) => {
+    console.log("Inside redis...................")
+    client.get('getUsers', (err, redis_data) => {
         console.log("INside redis get request...................")
-        if(err){
-            console.log("Error in Redis Client while Fetching data from Redis Key",err);
-        }else if(redis_data){
-            console.log("Redis se uthaya data ")
-            res.send(JSON.parse(redis_data))  //Firse Data to STring se Object me convert kara {JSON.parse}
-        }else{
+        if (err) {
+            console.log("Error in Redis Client while Fetching data from Redis Key", err);
+        } else if (redis_data) {
+            console.log("Fetching from Redis Not from Databse")
+            res.send({
+                data: JSON.object(redis_data),//Firse Data to STring se Object me convert kara JSON.parse,  
+                message: "Fetched User from Redis"
+            })
+        } else {
             next();
         }
 
@@ -49,21 +52,21 @@ const redis_getUsers = (req,res,next)=>{
 }
 
 //get user data from DB
-app.get("/users",redis_getUsers, (req, res) => {
-    console.log("Api running to fetch users");
+app.get("/users", redis_getUsers, (req, res) => {
+    console.log("Api running to fetch users from Database only (Query SQL)");
     let qrr = `SELECT * FROM user order by id;`;
     db.query(qrr, (err, results) => {
         if (err) {
             console.log("Error", err);
-        }
-        if (results.length > 0) {
+        } else {
             //Setting Redis key like-:  setEx( REDIS_KEY , EXPIRE_TIME , VALUE (ONly string type hona chahiye) )
-            client.setex('getUsers' , 3000 , JSON.stringify(results))
+            client.setex('getUsers', 3000, JSON.stringify(results))
             res.send({
-                message: "All users Data",
+                message: "Records fetched from DB",
                 data: results
             });
         }
+
     });
 })
 
@@ -73,17 +76,16 @@ app.get("/users",redis_getUsers, (req, res) => {
 //name and image by email
 app.get("/name/:email", (req, res) => {
     let email = req.params.email;
-    console.log(email)
     console.log("Api running to fetch name by email");
     let qrr = `SELECT name,netImg FROM user WHERE email ='${email}';`;
     db.query(qrr, (err, results) => {
-        if (results.length>0) {
+        if (results.length > 0) {
             res.send({
                 data: results[0].name,
                 body: results[0].netImg
             });
         }
-        else{
+        else {
             res.send({
                 message: "Error No email given"
             })
@@ -124,32 +126,44 @@ app.delete("/user/:id", (req, res) => {
             res.send({
                 message: "Users deleted from a ID",
             })
+            client.del('getUsers')
         }
     })
 })
-
-
-
 //create data in db 
 app.post("/user", (req, res) => {
-    console.log(req.body, "Post api to create user");
-    let id = req.body.id;
+    console.log("Post api to create user");
     let name = req.body.name;
     let email = req.body.email;
     let password = req.body.password;
     let netImg = req.body.netImg;
-
-    let qr = `insert into user(id,name,email,password,netImg)value('${id}','${name}','${email}','${password}','${netImg}')`;
-    db.query(qr, (err, results) => {
+    let qr = `insert into user (name,email,password,netImg) value ("${name}","${email}","${password}","${netImg}");`;
+    //Pushing the new user into Database
+    let qrr = `select * from user where password = '${password}';`;
+    db.query(qr, (err) => {
         if (err) {
             console.log("Error", err)
         }
         res.send({
-            message: "New Data pushed into DB"
+            message: "Created in DB"
         });
 
     })
+    function getDataToPushInRedis() {
+        db.query(qrr, (err, results) => {
+            if (err) {
+                console.log(err, "Error...............")
+            }
+            let resultToPush = JSON.stringify(results)
+            client.append('getUsers',resultToPush); //      Pushing the new user into Redis as well                       
+
+        })
+    }
+    getDataToPushInRedis()
 })
+
+
+
 //auth
 app.post('/auth', (request, res) => {
     let email = request.body.email;
@@ -158,17 +172,17 @@ app.post('/auth', (request, res) => {
     console.log("password in api-:", password)
     if (email && password) {
         let qr = `SELECT * FROM user WHERE email = '${email}' AND password = '${password}';`;
-        db.query(qr, (err,results) => {
-            if(results.length > 0){
+        db.query(qr, (err, results) => {
+            if (results.length > 0) {
                 res.send({
                     message: "Logged in",
                 });
             }
-            else{
-                res.send({message: "Error"})
+            else {
+                res.send({ message: "Error" })
             }
 
-          
+
         })
     }
 });

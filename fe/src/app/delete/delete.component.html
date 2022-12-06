@@ -1,23 +1,27 @@
-<h2>Users in Database</h2>
+<div style="padding-bottom: 30px; padding-left: 10px;">
+  <h2 style="margin-left: 5px;">Users in Database</h2>
+  <button type="button" class="btn btn-primary" (click)="navigateToSignup()"
+    style="font-size: 15px;background-color:#249920; border-radius: 20px;border-color: rgb(225, 223, 223);color: rgb(255, 255, 255);">Add User</button>
+</div>
 <table class="table">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col" style="width: 30px; padding-right: 30px;">Id</th>
-        <th scope="col" style="width: 10px;">Image</th>
-        <th scope="col">Name</th>
-        <th scope="col">Email</th>
-        <th scope="col">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let usr of readUser">
-        <th scope="row">{{usr.id}}</th>
-        <td><img src={{usr.netImg}} alt="No Image" style="border-radius: 50px;" width="70" height="70"></td>
-        <td>{{usr.name}}</td>
-        <td>{{usr.email}}</td>
-        <td><button class="btn btn-danger" (click)="deleteUser(usr.id)">Delete</button></td>
-      </tr>
-    </tbody>
-  </table>
-  
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col" style="width: 30px; padding-right: 30px;">Id</th>
+      <th scope="col" style="width: 10px;">Image</th>
+      <th scope="col">Name</th>
+      <th scope="col">Email</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let usr of readUser">
+      <th scope="row">{{usr.id}}</th>
+      <td><img src={{usr.netImg}} alt="No Image" style="border-radius: 50px;" width="70" height="70"></td>
+      <td>{{usr.name}}</td>
+      <td>{{usr.email}}</td>
+      <td><button class="btn btn-danger" (click)="deleteUser(usr.id)">Delete</button></td>
+    </tr>
+  </tbody>
+</table>
+
 <router-outlet></router-outlet>
