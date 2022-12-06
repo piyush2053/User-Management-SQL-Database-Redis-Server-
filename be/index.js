@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyparser = require('body-parser');
 const cors = require('cors');
-const mysql = require('mysql2')
+const mysql = require('mysql2');
+const redis = require('redis');
+const client = redis.createClient();
 
 const app = express();
 
@@ -29,8 +31,25 @@ db.connect(err => {
     }
 })
 
-//get data from DB
-app.get("/users", (req, res) => {
+//redis implementation 
+const redis_getUsers = (req,res,next)=>{
+    console.log("INside redis...................")
+    client.get('getUsers', (err,redis_data)=>{
+        console.log("INside redis get request...................")
+        if(err){
+            console.log("Error in Redis Client while Fetching data from Redis Key",err);
+        }else if(redis_data){
+            console.log("Redis se uthaya data ")
+            res.send(JSON.parse(redis_data))  //Firse Data to STring se Object me convert kara {JSON.parse}
+        }else{
+            next();
+        }
+
+    })
+}
+
+//get user data from DB
+app.get("/users",redis_getUsers, (req, res) => {
     console.log("Api running to fetch users");
     let qrr = `SELECT * FROM user order by id;`;
     db.query(qrr, (err, results) => {
@@ -38,6 +57,8 @@ app.get("/users", (req, res) => {
             console.log("Error", err);
         }
         if (results.length > 0) {
+            //Setting Redis key like-:  setEx( REDIS_KEY , EXPIRE_TIME , VALUE (ONly string type hona chahiye) )
+            client.setex('getUsers' , 3000 , JSON.stringify(results))
             res.send({
                 message: "All users Data",
                 data: results
@@ -45,6 +66,10 @@ app.get("/users", (req, res) => {
         }
     });
 })
+
+
+
+
 //name and image by email
 app.get("/name/:email", (req, res) => {
     let email = req.params.email;
