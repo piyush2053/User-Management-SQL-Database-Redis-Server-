@@ -11,15 +11,29 @@ export class DeleteComponent implements OnInit {
 
   constructor(private api: ApiserviceService,private router:Router) { }
   readUser: any;
+  validate = true;
+  messageVisible = false;
 
   ngOnInit(): void {
     this.api.getAllUser().subscribe((res) => {
       this.readUser = res.data;
-      
+      // console.log("email", this.readUser[0].email)
+      if(window.localStorage.getItem('email') === "piyush.patel@rws.com"){
+        this.validate = true;
+        this.messageVisible = false
+      }
+      else{
+        this.messageVisible = true
+        this.validate = false;
+      }
     })
   }
+
   navigateToSignup(){
     this.router.navigateByUrl('/signup');
+  }
+  logout() {
+    this.router.navigateByUrl('');
   }
 
   deleteUser(id:any){
@@ -30,6 +44,7 @@ export class DeleteComponent implements OnInit {
     })
   }
 
+  
 
   
 }

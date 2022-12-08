@@ -1,12 +1,16 @@
-<div style="padding-bottom: 30px; padding-left: 10px;">
-  <h2 style="margin-left: 5px;">Users in Database</h2>
-  <button type="button" class="btn btn-primary" (click)="navigateToSignup()"
-    style="font-size: 15px;background-color:#249920; border-radius: 20px;border-color: rgb(225, 223, 223);color: rgb(255, 255, 255);">Add User</button>
+<div style="padding-bottom: 30px; padding-left: 10px;display: flex;">
+  <h2 style="margin-left: 5px; margin-right: 10px;">Users in Database</h2>
+  <button type="button" class="btn btn-primary" [disabled]="!validate" (click)="navigateToSignup()"
+    style="font-size: 15px;background-color:#249920; border-radius: 20px; font-weight: 500;border-color: rgb(225, 223, 223);color: rgb(255, 255, 255);height: fit-content;width: fit-content; margin-top: 5px;">Add
+    User</button>
+  <button type="button" class="btn btn-primary" (click)="logout()" style="font-size: 15px;background-color:#FF9100; font-weight: 500; border-radius: 20px;border-color: rgb(225, 223, 223);color: rgb(255, 255, 255);height: fit-content;width: fit-content; margin-top: 5px; margin-left: 10px;">Logout</button>
+</div>
+<div class="alert alert-primary" role="alert" [hidden]="!messageVisible">
+  Only Admin can Delete/Add User
 </div>
 <table class="table">
   <thead class="thead-dark">
     <tr>
-      
       <th scope="col" style="width: 10px;">Image</th>
       <th scope="col">Name</th>
       <th scope="col">Email</th>
@@ -15,11 +19,10 @@
   </thead>
   <tbody>
     <tr *ngFor="let usr of readUser">
-      
       <td><img src={{usr.netImg}} alt="No Image" style="border-radius: 50px;" width="70" height="70"></td>
       <td>{{usr.name}}</td>
       <td>{{usr.email}}</td>
-      <td><button class="btn btn-danger" (click)="deleteUser(usr.id)">Delete</button></td>
+      <td><button class="btn btn-danger" [disabled]="!validate" (click)="deleteUser(usr.id)">Delete</button></td>
     </tr>
   </tbody>
 </table>
