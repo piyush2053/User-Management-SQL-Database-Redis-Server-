@@ -1,11 +1,15 @@
 <div>
-  <nav style="background-color: #01579B;height: 40px;">
-    <p style="color: white; font-size: 18px;font-weight: 600; padding-left: 10px;padding-top: 7px;" href="#">Piyush Patel CRUD Operations
-    </p>
+  <nav style="background-color: #01579B;height: 50px;margin-bottom: 10px;">
+    <div style="display: flex; justify-content: space-between;">
+      <p style="color: white; font-size: 22px;font-weight: 600; padding-left: 10px;padding-top: 7px;" href="#">Piyush
+        Patel CRUD Operations
+      </p>
+      <button *ngIf="this.isButtonVisible" style="font-size: 16px; height: min-content; width: fit-content;background-color: white; margin-top: 3px; color: black; margin-right: 10px;" class="btn btn-primary btn-lg" (click)="logout()">LogOut</button>
+    </div>
     <div style="padding-bottom: 10px; padding-left: 10px;">
       <!-- <button type="button" class="btn btn-primary" routerLink="signup"
         style="font-size: 15px;background-color: rgb(202, 197, 197); border-radius: 20px; margin-right: 8px;border-color: black;color: black;">Signup</button> -->
-<!-- 
+      <!-- 
       <button type="button" class="btn btn-primary" routerLink="login"
         style="font-size: 15px;background-color:rgb(202, 197, 197); border-radius: 20px;border-color: black;color: black;">Login</button> -->
     </div>

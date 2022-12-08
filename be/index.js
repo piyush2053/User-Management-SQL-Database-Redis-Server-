@@ -4,6 +4,7 @@ const cors = require('cors');
 const mysql = require('mysql2');
 const redis = require('redis');
 const client = redis.createClient();
+var async = require('async');
 
 const app = express();
 
@@ -41,7 +42,7 @@ const redis_getUsers = (req, res, next) => {
         } else if (redis_data) {
             console.log("Fetching from Redis Not from Databse")
             res.send({
-                data: JSON.object(redis_data),//Firse Data to STring se Object me convert kara JSON.parse,  
+                data: JSON.parse(redis_data),//Firse Data to STring se Object me convert kara JSON.parse,  
                 message: "Fetched User from Redis"
             })
         } else {
@@ -60,7 +61,7 @@ app.get("/users", redis_getUsers, (req, res) => {
             console.log("Error", err);
         } else {
             //Setting Redis key like-:  setEx( REDIS_KEY , EXPIRE_TIME , VALUE (ONly string type hona chahiye) )
-            client.setex('getUsers', 3000, JSON.stringify(results))
+            client.setex('getUsers', 3000, JSON.stringify(results))   //Setting to redis key from database query respone
             res.send({
                 message: "Records fetched from DB",
                 data: results
@@ -154,9 +155,15 @@ app.post("/user", (req, res) => {
             if (err) {
                 console.log(err, "Error...............")
             }
-            let resultToPush = JSON.stringify(results)
-            client.append('getUsers',resultToPush); //      Pushing the new user into Redis as well                       
-
+            client.get('getUsers', (err, redis_data1) => {
+                let redis_filtered = redis_data1.replace("]", ",");
+                // console.log("Redis data fetched", redis_filtered)
+                let filteredData = JSON.stringify(results).replace("[", "");
+                //now add filteredData new data with redis fetched redis_filtered data 
+                let resultFinal = redis_filtered.concat(filteredData);
+                console.log("Final data-:", resultFinal)
+                client.setex('getUsers', 3000, resultFinal); //      Pushing the new user into Redis as well                       
+            })
         })
     }
     getDataToPushInRedis()
@@ -168,12 +175,11 @@ app.post("/user", (req, res) => {
 app.post('/auth', (request, res) => {
     let email = request.body.email;
     let password = request.body.password;
-    console.log("email in api-:", email)
-    console.log("password in api-:", password)
     if (email && password) {
-        let qr = `SELECT * FROM user WHERE email = '${email}' AND password = '${password}';`;
+        let qr = `SELECT email,password FROM user WHERE email = '${email}' AND password = '${password}';`;
         db.query(qr, (err, results) => {
-            if (results.length > 0) {
+            let result1 = results.length
+            if (result1 > 0) {
                 res.send({
                     message: "Logged in",
                 });
